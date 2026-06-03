@@ -11,6 +11,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.14.0
+  cloud_firestore: ^4.13.0
+  firebase_storage: ^11.5.0
+  firebase_messaging: ^14.6.0
+  get: ^4.6.5
+  uuid: ^4.0.0
+  image_picker: ^1.0.4
+  
+dependencies:
+  flutter:
+    sdk: flutter
 
   # Firebase
   firebase_core: ^2.24.0
