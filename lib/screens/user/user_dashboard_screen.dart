@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/user_model.dart';
 import '../../services/firebase_service.dart';
+import '../../services/messaging_service.dart';
+import '../messenger/messenger_screen.dart';
 
 class UserDashboardScreen extends StatefulWidget {
   const UserDashboardScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
   late Animation<Offset> _slideAnimation;
 
   final FirebaseService _firebaseService = FirebaseService();
+  final MessagingService _messagingService = MessagingService();
   UserModel? _userModel;
   bool _isLoading = true;
   int _selectedIndex = 0;
@@ -151,97 +154,10 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     return IndexedStack(
       index: _selectedIndex,
       children: [
-        _buildMessagesView(),
+        const MessengerScreen(),
         _buildProfileView(),
         _buildSettingsView(),
       ],
-    );
-  }
-
-  Widget _buildMessagesView() {
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'MESSAGES',
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Vos conversations',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.textSecondaryColor,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: AppTheme.primaryColor.withOpacity(0.3),
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    color: AppTheme.surfaceColor,
-                  ),
-                  child: ListTile(
-                    leading: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppTheme.primaryColor,
-                          width: 2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'U${index + 1}',
-                          style:
-                              Theme.of(context).textTheme.labelLarge,
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      'Utilisateur ${index + 1}',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    subtitle: Text(
-                      'Dernier message...',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.textSecondaryColor
-                                .withOpacity(0.7),
-                          ),
-                    ),
-                    trailing: Text(
-                      '10m',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textSecondaryColor,
-                          ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 
