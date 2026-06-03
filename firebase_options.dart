@@ -44,37 +44,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'YOUR_AUTH_DOMAIN',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyAfu1gpJwbuLczaMvaAg8JfwhWNLBfqYE4',
+    appId: '1:209758687103:web:852aec41c31239925f544a',
+    messagingSenderId: '209758687103',
+    projectId: 'arcane-ops',
+    authDomain: 'arcane-ops.firebaseapp.com',
+    storageBucket: 'arcane-ops.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyAfu1gpJwbuLczaMvaAg8JfwhWNLBfqYE4',
+    appId: '1:209758687103:android:852aec41c31239925f544a',
+    messagingSenderId: '209758687103',
+    projectId: 'arcane-ops',
+    storageBucket: 'arcane-ops.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyAfu1gpJwbuLczaMvaAg8JfwhWNLBfqYE4',
+    appId: '1:209758687103:ios:852aec41c31239925f544a',
+    messagingSenderId: '209758687103',
+    projectId: 'arcane-ops',
+    storageBucket: 'arcane-ops.firebasestorage.app',
     iosBundleId: 'com.example.arcaneOps',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY',
-    appId: 'YOUR_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyAfu1gpJwbuLczaMvaAg8JfwhWNLBfqYE4',
+    appId: '1:209758687103:macos:852aec41c31239925f544a',
+    messagingSenderId: '209758687103',
+    projectId: 'arcane-ops',
+    storageBucket: 'arcane-ops.firebasestorage.app',
     iosBundleId: 'com.example.arcaneOps',
   );
 }
