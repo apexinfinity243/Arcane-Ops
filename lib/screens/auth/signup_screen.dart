@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/country_codes.dart';
+import '../../screens/dialogs/country_picker_dialog.dart';
 import '../../models/user_model.dart';
 import '../../services/firebase_service.dart';
 import '../../core/utils/validators.dart';
+import '../auth/verification_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -28,6 +31,7 @@ class _SignupScreenState extends State<SignupScreen>
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  late CountryCode _selectedCountry;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -36,6 +40,8 @@ class _SignupScreenState extends State<SignupScreen>
   @override
   void initState() {
     super.initState();
+    _selectedCountry = CountryCodes.countries[0]; // Default to US
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -79,6 +85,10 @@ class _SignupScreenState extends State<SignupScreen>
         );
 
         if (userCredential != null && userCredential.user != null) {
+          // Create full phone number
+          final fullPhoneNumber =
+              '${_selectedCountry.dialCode}${_phoneController.text.trim()}';
+
           // Create user model
           final userModel = UserModel(
             uid: userCredential.user!.uid,
@@ -86,7 +96,7 @@ class _SignupScreenState extends State<SignupScreen>
             lastName: _lastNameController.text.trim(),
             postName: _postNameController.text.trim(),
             birthDate: _birthdateController.text.trim(),
-            phoneNumber: _phoneController.text.trim(),
+            phoneNumber: fullPhoneNumber,
             email: _emailController.text.trim(),
             createdAt: DateTime.now(),
           );
@@ -108,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen>
           Get.offAll(
             () => VerificationScreen(
               email: _emailController.text.trim(),
-              phoneNumber: _phoneController.text.trim(),
+              phoneNumber: fullPhoneNumber,
               isEmailVerification: true,
             ),
           );
@@ -224,15 +234,95 @@ class _SignupScreenState extends State<SignupScreen>
                                 validator: Validators.validateDate,
                               ),
                               const SizedBox(height: 16),
-                              // Phone
-                              TextFormField(
-                                controller: _phoneController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Numéro de téléphone',
-                                  prefixIcon: Icon(Icons.phone),
-                                  hintText: '+1 (555) 123-4567',
-                                ),
-                                validator: Validators.validatePhoneNumber,
+                              // Phone with country picker
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              CountryPickerDialog(
+                                            initialCountry: _selectedCountry,
+                                            onCountrySelected: (country) {
+                                              setState(() {
+                                                _selectedCountry = country;
+                                              });
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: AppTheme.primaryColor
+                                                .withOpacity(0.3),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: AppTheme.surfaceColor,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Pays',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall
+                                                  ?.copyWith(
+                                                    color: AppTheme
+                                                        .textSecondaryColor,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  _selectedCountry.flag,
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  _selectedCountry.dialCode,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge
+                                                      ?.copyWith(
+                                                        color: AppTheme
+                                                            .primaryColor,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    flex: 3,
+                                    child: TextFormField(
+                                      controller: _phoneController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Téléphone',
+                                        prefixIcon: Icon(Icons.phone),
+                                        hintText: '123456789',
+                                      ),
+                                      validator:
+                                          Validators.validatePhoneNumber,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               // Email
@@ -382,6 +472,3 @@ class MatrixRainPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-// Import at top
-import '../auth/verification_screen.dart';

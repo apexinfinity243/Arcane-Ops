@@ -5,6 +5,9 @@ import '../../models/message_model.dart';
 import '../../models/conversation_model.dart';
 import '../../services/firebase_service.dart';
 import '../../services/messaging_service.dart';
+import '../../services/storage_service.dart';
+import '../../services/notification_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MessengerScreen extends StatefulWidget {
   const MessengerScreen({Key? key}) : super(key: key);
@@ -69,6 +72,14 @@ class _MessengerScreenState extends State<MessengerScreen>
             color: AppTheme.primaryColor.withOpacity(0.2),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () {
+              Get.toNamed('/users');
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(
@@ -112,6 +123,14 @@ class _MessengerScreenState extends State<MessengerScreen>
                                 ?.copyWith(
                                   color: AppTheme.textSecondaryColor,
                                 ),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Get.toNamed('/users');
+                            },
+                            icon: const Icon(Icons.person_add),
+                            label: const Text('Démarrer une conversation'),
                           ),
                         ],
                       ),
@@ -226,11 +245,14 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _messageController = TextEditingController();
+  final _imagePicker = ImagePicker();
   final FirebaseService _firebaseService = FirebaseService();
   final MessagingService _messagingService = MessagingService();
+  final NotificationService _notificationService = NotificationService();
   late String _currentUserId;
   late String _currentUserName;
   bool _isSending = false;
+  bool _isUploadingImage = false;
 
   @override
   void initState() {
@@ -271,6 +293,47 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     } finally {
       setState(() => _isSending = false);
+    }
+  }
+
+  Future<void> _pickAndSendImage() async {
+    try {
+      final pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedFile != null) {
+        setState(() => _isUploadingImage = true);
+
+        final imageUrl = await StorageService.uploadImage(
+          widget.conversationId,
+          _currentUserId,
+          pickedFile.path,
+        );
+
+        await StorageService.sendImageMessage(
+          conversationId: widget.conversationId,
+          senderId: _currentUserId,
+          senderName: _currentUserName,
+          imageUrl: imageUrl,
+        );
+
+        Get.snackbar(
+          'Succès',
+          'Image envoyée!',
+          backgroundColor: AppTheme.successColor,
+          colorText: AppTheme.backgroundColor,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Erreur',
+        e.toString(),
+        backgroundColor: AppTheme.errorColor,
+        colorText: AppTheme.backgroundColor,
+      );
+    } finally {
+      setState(() => _isUploadingImage = false);
     }
   }
 
@@ -363,6 +426,31 @@ class _ChatScreenState extends State<ChatScreen> {
                               ? CrossAxisAlignment.end
                               : CrossAxisAlignment.start,
                           children: [
+                            if (message.imageUrl != null) ...
+                              [
+                                Container(
+                                  width: 150,
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                  ),
+                                  child: Image.network(
+                                    message.imageUrl!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, st) =>
+                                        Center(
+                                      child: Icon(
+                                        Icons.broken_image,
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                              ],
                             Text(
                               message.text,
                               style: Theme.of(context)
@@ -410,6 +498,36 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             child: Row(
               children: [
+                GestureDetector(
+                  onTap: _isUploadingImage ? null : _pickAndSendImage,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppTheme.surfaceColor,
+                      border: Border.all(
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                    child: _isUploadingImage
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppTheme.primaryColor,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.image,
+                            color: AppTheme.primaryColor,
+                            size: 20,
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: _messageController,
