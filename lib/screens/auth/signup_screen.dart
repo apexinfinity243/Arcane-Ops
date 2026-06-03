@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/user_model.dart';
+import '../../services/firebase_service.dart';
 import '../../core/utils/validators.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -29,7 +31,7 @@ class _SignupScreenState extends State<SignupScreen>
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
-  int _currentStep = 0;
+  final FirebaseService _firebaseService = FirebaseService();
 
   @override
   void initState() {
@@ -65,20 +67,62 @@ class _SignupScreenState extends State<SignupScreen>
     super.dispose();
   }
 
-  void _handleSignup() {
+  Future<void> _handleSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      // TODO: Implement Firebase registration
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() => _isLoading = false);
+      try {
+        // Sign up with email and password
+        final userCredential = await _firebaseService.signUpWithEmail(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+
+        if (userCredential != null && userCredential.user != null) {
+          // Create user model
+          final userModel = UserModel(
+            uid: userCredential.user!.uid,
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            postName: _postNameController.text.trim(),
+            birthDate: _birthdateController.text.trim(),
+            phoneNumber: _phoneController.text.trim(),
+            email: _emailController.text.trim(),
+            createdAt: DateTime.now(),
+          );
+
+          // Save to Firestore
+          await _firebaseService.saveUserData(userModel);
+
+          // Send verification email
+          await _firebaseService.sendVerificationEmail();
+
+          Get.snackbar(
+            'Succès',
+            'Inscription réussie! Vérifiez votre email.',
+            backgroundColor: AppTheme.successColor,
+            colorText: AppTheme.backgroundColor,
+          );
+
+          // Navigate to verification screen
+          Get.offAll(
+            () => VerificationScreen(
+              email: _emailController.text.trim(),
+              phoneNumber: _phoneController.text.trim(),
+              isEmailVerification: true,
+            ),
+          );
+        }
+      } catch (e) {
         Get.snackbar(
-          'Succès',
-          'Inscription en cours...',
-          backgroundColor: AppTheme.successColor,
+          'Erreur',
+          e.toString(),
+          backgroundColor: AppTheme.errorColor,
           colorText: AppTheme.backgroundColor,
         );
-      });
+      } finally {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -338,3 +382,6 @@ class MatrixRainPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+// Import at top
+import '../auth/verification_screen.dart';

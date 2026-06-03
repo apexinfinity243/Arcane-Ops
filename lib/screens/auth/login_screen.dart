@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_theme.dart';
+import '../../services/firebase_service.dart';
 import '../../core/utils/validators.dart';
+import '../user/user_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  final FirebaseService _firebaseService = FirebaseService();
 
   @override
   void initState() {
@@ -50,20 +53,34 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      // TODO: Implement Firebase authentication
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() => _isLoading = false);
+      try {
+        await _firebaseService.signInWithEmail(
+          _emailPhoneController.text.trim(),
+          _passwordController.text,
+        );
+
         Get.snackbar(
           'Succès',
-          'Connexion en cours...',
+          'Connexion réussie!',
           backgroundColor: AppTheme.successColor,
           colorText: AppTheme.backgroundColor,
         );
-      });
+
+        Get.offAll(() => const UserDashboardScreen());
+      } catch (e) {
+        Get.snackbar(
+          'Erreur',
+          e.toString(),
+          backgroundColor: AppTheme.errorColor,
+          colorText: AppTheme.backgroundColor,
+        );
+      } finally {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -161,7 +178,12 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                 ),
-                                validator: Validators.validatePassword,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Le mot de passe est requis';
+                                  }
+                                  return null;
+                                },
                               ),
                               const SizedBox(height: 24),
                               // Login Button

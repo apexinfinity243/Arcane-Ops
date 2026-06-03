@@ -5,6 +5,10 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/auth/welcome_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/signup_screen.dart';
+import 'screens/auth/verification_screen.dart';
+import 'screens/user/user_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +31,16 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/splash', page: () => const SplashScreen()),
         GetPage(name: '/welcome', page: () => const WelcomeScreen()),
+        GetPage(name: '/login', page: () => const LoginScreen()),
+        GetPage(name: '/signup', page: () => const SignupScreen()),
+        GetPage(
+          name: '/verification',
+          page: () => const VerificationScreen(
+            email: '',
+            phoneNumber: '',
+          ),
+        ),
+        GetPage(name: '/home', page: () => const UserDashboardScreen()),
       ],
     );
   }
