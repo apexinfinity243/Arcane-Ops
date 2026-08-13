@@ -19,7 +19,7 @@ class NotificationService {
         announcement: false,
         badge: true,
        
-        critical: false,
+        
         provisional: false,
         sound: true,
       );
