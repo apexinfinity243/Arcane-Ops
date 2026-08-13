@@ -4,7 +4,8 @@ class CountryCode {
   final String dialCode;
   final String flag;
 
-  CountryCode({
+  // Ajout de 'const' ici pour permettre l'utilisation dans une liste const
+  const CountryCode({
     required this.code,
     required this.name,
     required this.dialCode,

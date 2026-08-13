@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import '../models/message_model.dart';
-
+import 'dart:io';
 class StorageService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -97,4 +97,4 @@ class StorageService {
   }
 }
 
-import 'dart:io';
+

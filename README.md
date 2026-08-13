@@ -1,4 +1,4 @@
-# ARCANE-OPS 🎯
+# ARCANE-OPS 
 
 A Flutter application featuring a modern Matrix-inspired hacker dark theme with authentication and messaging capabilities.
 

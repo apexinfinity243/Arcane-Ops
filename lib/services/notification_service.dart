@@ -1,4 +1,4 @@
-import 'package:firebase_cloud_messaging/firebase_cloud_messaging.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../models/notification_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,8 +18,8 @@ class NotificationService {
         alert: true,
         announcement: false,
         badge: true,
-        carryForward: true,
-        critical: false,
+       
+        
         provisional: false,
         sound: true,
       );

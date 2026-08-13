@@ -67,7 +67,8 @@ class _MessengerScreenState extends State<MessengerScreen>
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         elevation: 0,
-        border: Border(
+        // 🔄 'border:' a été remplacé par 'shape:' ici
+        shape: Border(
           bottom: BorderSide(
             color: AppTheme.primaryColor.withOpacity(0.2),
           ),
@@ -358,7 +359,8 @@ class _ChatScreenState extends State<ChatScreen> {
           child: const Icon(Icons.arrow_back),
         ),
         elevation: 0,
-        border: Border(
+        // 🔄 'border:' a été remplacé par 'shape:' ici
+        shape: Border(
           bottom: BorderSide(
             color: AppTheme.primaryColor.withOpacity(0.2),
           ),
@@ -426,31 +428,30 @@ class _ChatScreenState extends State<ChatScreen> {
                               ? CrossAxisAlignment.end
                               : CrossAxisAlignment.start,
                           children: [
-                            if (message.imageUrl != null) ...
-                              [
-                                Container(
-                                  width: 150,
-                                  height: 150,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
+                            if (message.imageUrl != null) ...[
+                              Container(
+                                width: 150,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                ),
+                                child: Image.network(
+                                  message.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, st) =>
+                                      Center(
+                                    child: Icon(
+                                      Icons.broken_image,
                                       color: AppTheme.primaryColor,
                                     ),
                                   ),
-                                  child: Image.network(
-                                    message.imageUrl!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, st) =>
-                                        Center(
-                                      child: Icon(
-                                        Icons.broken_image,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                  ),
                                 ),
-                                const SizedBox(height: 4),
-                              ],
+                              ),
+                              const SizedBox(height: 4),
+                            ],
                             Text(
                               message.text,
                               style: Theme.of(context)
